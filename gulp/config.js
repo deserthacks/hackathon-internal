@@ -24,7 +24,7 @@ module.exports = {
   },
   browserify: {
     settings: {
-      transform: ['6to5ify']
+      transform: ['babelify']
     },
     src: src + '/js/index.js',
     dest: dest + '/js',
