@@ -1,0 +1,28 @@
+@import "./normalize.css";
+@import "node_modules/bootstrap/less/bootstrap";
+@import (inline) "node_modules/fixed-data-table/dist/fixed-data-table-base.css";
+@import (inline) "node_modules/fixed-data-table/dist/fixed-data-table-style.css";
+
+@primary-color: #5B83AD;
+
+// Overwrite fixed-data-table styles
+.public_fixedDataTableRow_main {
+  .bg-danger {
+    background-color: @brand-danger !important;
+  }
+  .bg-success {
+    background-color: @brand-success !important;
+  }
+}
+
+h1 {
+  color: @primary-color;
+}
+
+li.task {
+  list-style-type: none;
+
+  label {
+    padding: 0 10px;
+  }
+}
