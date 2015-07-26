@@ -1,9 +1,16 @@
 {
   "name": "hackathon-internal",
   "version": "0.1.0",
-  "description": "hackathon-internal: UI for internal tools used by hackathon organizers",
-  "author": "",
+  "description": "hackathon-internal: a web app for hackathon internal tools",
+  "author": "Jack Ketcham <jack@jackketcham.com> (http://jackketcham.com)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/deserthacks/hackathon-internal"
+  },
+  "bugs": {
+    "url": "https://github.com/deserthacks/hackathon-internal/issues"
+  },
   "devDependencies": {
     "babelify": "^6.1.3",
     "browserify": "^10.2.6",
