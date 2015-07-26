@@ -12,19 +12,21 @@ module.exports = {
       }
     }
   },
-  sass: {
-    src: src + "/styles/**/*.{sass,scss,css}",
+  less: {
+    src: src + "/styles/**/*.{less,css}",
     dest: dest + "/styles",
     settings: {
-      indentedSyntax: false, // Enable .sass syntax?
-      imagePath: '/images' // Used by the image-url helper
+      paths: []
     }
+  },
+  lint: {
+    src: src + '/js/**/*.js'
   },
   browserify: {
     settings: {
-      transform: ['reactify', '6to5ify']
+      transform: ['6to5ify']
     },
-    src: src + '/js/index.jsx',
+    src: src + '/js/index.js',
     dest: dest + '/js',
     outputName: 'index.js',
   },

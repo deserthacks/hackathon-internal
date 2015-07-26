@@ -1,3 +1,5 @@
+'use strict';
+
 var keyMirror = require('react/lib/keyMirror');
 
 module.exports = {
@@ -5,7 +7,10 @@ module.exports = {
   CHANGE_EVENT: 'change',
 
   ActionTypes: keyMirror({
-    ADD_TASK: null
+    LOGIN: null,
+    LOGOUT: null,
+    CLEAR_TOKEN: null,
+    GET_CURRENT_USER: null,
   }),
 
   ActionSources: keyMirror({
