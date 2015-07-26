@@ -34,6 +34,10 @@ module.exports = {
     src: 'src/index.html',
     dest: dest
   },
+  fonts: {
+    src: './node_modules/bootstrap/dist/fonts/*.*',
+    dest: dest + '/fonts'
+  },
   watch: {
     src: 'src/**/*.*',
     tasks: ['build']
