@@ -2,6 +2,10 @@
 
 > a simple, exstensible, starting-point web app for hackathon internal tools
 
+[![npm version](https://img.shields.io/npm/v/hackathon-internal.svg)](https://www.npmjs.com/package/hackathon-internal)
+[![Dependency Status](https://david-dm.org/deserthacks/hackathon-internal.svg)](https://david-dm.org/deserthacks/hackathon-internal)
+[![devDependency Status](https://david-dm.org/deserthacks/hackathon-internal/dev-status.svg)](https://david-dm.org/deserthacks/hackathon-internal#info=devDependencies)
+
 ## Features
 
 - Review attendee applications
