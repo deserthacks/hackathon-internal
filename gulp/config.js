@@ -1,4 +1,4 @@
-var dest = "./dist";
+var dest = './dist';
 var src = './src';
 
 module.exports = {
@@ -13,8 +13,8 @@ module.exports = {
     }
   },
   less: {
-    src: src + "/styles/**/*.{less,css}",
-    dest: dest + "/styles",
+    src: src + '/styles/**/*.{less,css}',
+    dest: dest + '/styles',
     settings: {
       paths: []
     }
@@ -24,7 +24,7 @@ module.exports = {
   },
   browserify: {
     settings: {
-      transform: ['6to5ify']
+      transform: ['babelify']
     },
     src: src + '/js/index.js',
     dest: dest + '/js',
