@@ -6,13 +6,34 @@
 @primary-color: #5B83AD;
 
 // Overwrite fixed-data-table styles
-.public_fixedDataTableRow_main {
-  .bg-danger {
-    background-color: @brand-danger !important;
+.bg-success {
+  .public_fixedDataTableCell_main {
+    background-color: @state-success-bg;
   }
-  .bg-success {
-    background-color: @brand-success !important;
+}
+
+.bg-warning {
+  .public_fixedDataTableCell_main {
+    background-color: @state-warning-bg;
   }
+}
+
+.bg-danger {
+  .public_fixedDataTableCell_main {
+    background-color: @state-danger-bg;
+  }
+}
+
+.fixedDataTableRowLayout_rowWrapper {
+  cursor: pointer;
+}
+
+/**
+ * Global/General
+ */
+
+body {
+  padding-top: 65px;
 }
 
 h1 {
@@ -25,4 +46,22 @@ li.task {
   label {
     padding: 0 10px;
   }
+}
+
+/**
+ * Modules
+ */
+
+.module__content {
+  .panel-title {
+    display: inline;
+  }
+}
+
+/**
+ * (Fixed Data) Table
+ */
+
+.hi-table__row {
+  border-bottom: 1px solid #d3d3d3;
 }
