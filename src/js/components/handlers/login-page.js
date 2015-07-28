@@ -59,21 +59,20 @@ var LoginPage = React.createClass({
 
   render: function render() {
     return (
-      h('div', {className: 'row'}, [
-        h('section', {className: 'col-md-12'}, [
-          h('div', {className: 'page__header'}, [
-            h('h1', {className: 'page__title'}, 'Tools Login')
-          ])
-        ]),
-        h('section', {className: 'col-md-12'}, [
-          h('div', {className: 'page__body'}, [
-            h('div', {className: 'row'}, [
-              h('div', {className: 'col-md-4'}, [
+      h('div', {className: 'container'}, [
+        h('div', {className: 'row'}, [
+          h('div', {className: 'col-md-4 col-md-offset-4'}, [
+            h('div', {className: 'panel panel-default'}, [
+              h('div', {className: 'panel-heading'}, [
+                h('h3', {className: 'panel-title'}, 'Tools Login')
+              ]),
+              h('div', {className: 'panel-body'}, [
                 h('form', [
                   h('div', {className: 'form-group'}, [
                     h('label', {htmlFor: 'email'}, 'Email address'),
                     h('input', {
                       type: 'text',
+                      className: 'form-control',
                       id: 'email',
                       ref: 'email',
                       onChange: this._onFormChange
@@ -83,6 +82,7 @@ var LoginPage = React.createClass({
                     h('label', {htmlFor: 'password'}, 'Password'),
                     h('input', {
                       type: 'password',
+                      className: 'form-control',
                       id: 'password',
                       onChange: this._onFormChange
                     })
@@ -90,7 +90,6 @@ var LoginPage = React.createClass({
                   h('div', {className: 'form-group'}, [
                     h('button', {
                       className: 'btn btn-default',
-                      // type: 'submit',
                       onClick: this._onSubmit
                     }, 'Login')
                   ])
