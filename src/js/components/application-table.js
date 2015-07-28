@@ -1,6 +1,7 @@
 'use strict';
 
 var h = require('react-hyperscript');
+var moment = require('moment');
 var React = require('react');
 var Router = require('react-router');
 var FixedDataTable = require('fixed-data-table');
