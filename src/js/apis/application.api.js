@@ -37,9 +37,11 @@ var ApplicationAPI = {
   getApplications: function getApplications(options, cb) {
     options = options || {};
 
+    var query = APIUtil.query(options, true);
+
     // TODO: setup better domain name
     xhr({
-      uri: 'http://localhost:3000/applications',
+      uri: 'http://localhost:3000/applications?' + query,
       method: 'GET',
       headers: {
         'Authorization': 'Bearer ' + APIUtil.getToken()
@@ -59,11 +61,13 @@ var ApplicationAPI = {
     });
   },
 
-  acceptApplication: function acceptApplication(application, cb) {
+  getAdjacentApplications: function getAdjacentApplications(options, cb) {
+    options = options || {};
+
     // TODO: setup better domain name
     xhr({
-      uri: 'http://localhost:3000/applications/' + application._id + '/approval',
-      method: 'POST',
+      uri: 'http://localhost:3000/applications/' + options.id + '/adjacent',
+      method: 'GET',
       headers: {
         'Authorization': 'Bearer ' + APIUtil.getToken()
       }
@@ -81,14 +85,46 @@ var ApplicationAPI = {
     });
   },
 
+  acceptApplication: function acceptApplication(application, cb) {
+    var body = {
+      reviewNote: application.reviewNote
+    };
+
+    // TODO: setup better domain name
+    xhr({
+      uri: 'http://localhost:3000/applications/' + application._id + '/approval',
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + APIUtil.getToken()
+      },
+      body: JSON.stringify(body)
+    }, function response(err, res, body) {
+      if (!err && res.statusCode === 200) {
+        var parsedBody = JSON.parse(body);
+
+        return cb(null, parsedBody);
+      } else {
+        APIUtil.badResponse(res, function() {
+
+        });
+        return APIUtil.handleError(err, res, cb);
+      }
+    });
+  },
+
   rejectApplication: function rejectApplication(application, cb) {
+    var body = {
+      reviewNote: application.reviewNote
+    };
+
     // TODO: setup better domain name
     xhr({
       uri: 'http://localhost:3000/applications/' + application._id + '/rejection',
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + APIUtil.getToken()
-      }
+      },
+      body: JSON.stringify(body)
     }, function response(err, res, body) {
       if (!err && res.statusCode === 200) {
         var parsedBody = JSON.parse(body);
