@@ -1,12 +1,48 @@
 'use strict';
 
+var FixedDataTable = require('fixed-data-table');
 var h = require('react-hyperscript');
 var moment = require('moment');
 var React = require('react');
 var Router = require('react-router');
-var FixedDataTable = require('fixed-data-table');
 
-var ROW_HEIGHT = 150;
+var ROW_HEIGHT = 50;
+
+function renderAcceptedColumn(cellData) {
+  return h('div', {className: 'fdt-table__cell'}, [
+    h('span', cellData ? 'Accepted' : 'Rejected')
+  ]);
+}
+
+function renderCreatedAtColumn(cellData) {
+  return h('div', {className: 'fdt-table__cell'}, [
+    h('span', moment(cellData).format('lll'))
+  ]);
+}
+
+function renderHackathonColumn(cellData) {
+  return h('div', {className: 'fdt-table__cell'}, [
+    h('span', cellData.subdomain)
+  ]);
+}
+
+function renderReviewerColumn(cellData) {
+  if (cellData) {
+    return h('div', {className: 'fdt-table__cell'}, [
+      h(Router.Link, {to: 'dashboard', params: {id: cellData._id}}, cellData.firstName + ' ' + cellData.lastName)
+    ]);
+  } else {
+    return h('div', {className: 'fdt-table__cell'}, [
+      h('em', 'Not reviewed yet')
+    ]);
+  }
+}
+
+function renderUserColumn(cellData) {
+  return h('div', {className: 'fdt-table__cell'}, [
+    h(Router.Link, {to: 'dashboard', params: {id: cellData._id}}, cellData.firstName + ' ' + cellData.lastName)
+  ]);
+}
 
 var ApplicationTable = React.createClass({
 
@@ -61,21 +97,27 @@ var ApplicationTable = React.createClass({
   // TODO: implement
   _getRowClass: function _getRowClass(index) {
     var application = this._getRow(index);
+    var classname = 'hi-table__row';
 
     if (application) {
+      var status = '';
       if (application.accepted) {
-        return '';
+        status = ' bg-success';
       } else {
-        return '';
+        status = ' bg-danger';
       }
+      if (application.status === 'received') {
+        status = ' bg-warning';
+      }
+      classname += status;
     }
-    return '';
+    return classname;
   },
 
   _update: function _update() {
     if (this.isMounted()) {
       var node = React.findDOMNode(this);
-      var listHeight = (window.innerHeight < (this.props.initialLength * ROW_HEIGHT)) ? (window.innerHeight - 100) : this.props.initialLength * ROW_HEIGHT;
+      var listHeight = (window.innerHeight < (this.props.initialLength * ROW_HEIGHT)) ? (window.innerHeight - 150) : this.props.initialLength * ROW_HEIGHT;
 
       this.setState({
         renderComp: true,
@@ -114,14 +156,16 @@ var ApplicationTable = React.createClass({
             overflowY: 'auto'
           }, [
             h(FixedDataTable.Column, {
-              label: 'ID',
-              width: 50,
-              dataKey: '_id'
+              label: 'Hackathon',
+              width: 100,
+              dataKey: 'hackathon',
+              cellRenderer: renderHackathonColumn
             }),
             h(FixedDataTable.Column, {
-              label: 'Created At',
-              width: 100,
-              dataKey: 'createdAt'
+              label: 'User',
+              width: 200,
+              dataKey: 'user',
+              cellRenderer: renderUserColumn
             }),
             h(FixedDataTable.Column, {
               label: 'Status',
@@ -131,7 +175,8 @@ var ApplicationTable = React.createClass({
             h(FixedDataTable.Column, {
               label: 'Decision',
               width: 100,
-              dataKey: 'accepted'
+              dataKey: 'accepted',
+              cellRenderer: renderAcceptedColumn
             }),
             h(FixedDataTable.Column, {
               label: 'Role',
@@ -139,9 +184,27 @@ var ApplicationTable = React.createClass({
               dataKey: 'role'
             }),
             h(FixedDataTable.Column, {
-              label: 'Name',
+              label: 'Created At',
+              width: 100,
+              dataKey: 'createdAt',
+              cellRenderer: renderCreatedAtColumn
+            }),
+            h(FixedDataTable.Column, {
+              label: 'Reviewer',
               width: 200,
-              dataKey: 'user'
+              dataKey: 'reviewedBy',
+              cellRenderer: renderReviewerColumn
+            }),
+            h(FixedDataTable.Column, {
+              label: 'Reviewer note',
+              width: 200,
+              dataKey: 'reviewNote',
+              flexGrow: 2
+            }),
+            h(FixedDataTable.Column, {
+              label: 'ID',
+              width: 205,
+              dataKey: '_id'
             })
           ])
         ])
