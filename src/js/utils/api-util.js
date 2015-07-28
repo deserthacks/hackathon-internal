@@ -1,5 +1,7 @@
 'use strict';
 
+var qs = require('qs');
+
 var SessionActions = require('../actions/session.actions');
 
 var APIUtil = {

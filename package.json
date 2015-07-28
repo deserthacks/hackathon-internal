@@ -39,6 +39,7 @@
     "lodash": "^3.10.0",
     "moment": "^2.10.3",
     "object-assign": "^3.0.0",
+    "qs": "^4.0.0",
     "react": "^0.13.3",
     "react-hyperscript": "^2.1.0",
     "react-router": "^0.13.3",
