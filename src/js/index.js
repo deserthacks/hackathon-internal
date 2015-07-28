@@ -15,17 +15,17 @@ var LoginPage = require('./components/handlers/login-page');
 
 var routes = (
   h(Router.Route, {name: 'root', path: '/', handler: App}, [
-    h(Router.DefaultRoute, {name: 'dashboard', handler: Dashboard}),
+    h(Router.DefaultRoute, {
+      name: 'dashboard',
+      handler: Dashboard,
+      onEnter: AuthUtil.authenticated
+    }),
     h(Router.Route, {name: 'login', path: '/login', handler: LoginPage}),
     h(Router.Route, {
       name: 'applications',
       path: '/applications',
       handler: ApplicationHandler,
-      onEnter: AuthUtil.authenticated,
-      onLeave: function(nextState, transition) {
-        console.log('LEAVING APPLICATIONS');
-        console.log(nextState, transition);
-      }
+      onEnter: AuthUtil.authenticated
       }, [
         h(Router.DefaultRoute, {
           name: 'applications-index',

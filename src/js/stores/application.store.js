@@ -9,7 +9,6 @@ var ApplicationAPI = require('../apis/application.api');
 var ApplicationConstants = require('../constants/application.constants');
 var SessionConstants = require('../constants/session.constants');
 
-// TODO: use immutable.js here
 var _applications = Immutable.List();
 
 function clearApplications() {
@@ -18,13 +17,14 @@ function clearApplications() {
 
 function storeApplication(application) {
   application = application || {};
+
+  var immutableApplication = Immutable.fromJS(application);
   var key;
   var alreadyStored = _applications.find(function find(item, index) {
     key = index;
     return item.get('_id') === application._id;
   });
 
-  var immutableApplication = Immutable.fromJS(application);
   if (alreadyStored) {
     _applications = _applications.update(key, function updater(currentApplication) {
       currentApplication = immutableApplication;
@@ -50,12 +50,9 @@ var ApplicationStore = assign(EventEmitter.prototype, {
   },
 
   getApplication: function getApplication(id) {
-    console.log(id);
     var application = _applications.find(function find(item) {
       return item.get('_id') === id;
     });
-
-    console.log('APPLICATION STORE: getApplication %O', application);
 
     if (application) {
       return application.toJS();
@@ -68,7 +65,7 @@ var ApplicationStore = assign(EventEmitter.prototype, {
 
   getApplications: function getApplications() {
     var applications = _applications.toJS();
-    console.log(applications);
+
     return applications;
   },
 
@@ -89,7 +86,6 @@ var ApplicationStore = assign(EventEmitter.prototype, {
   },
 
   dispatcherIndex: AppDispatcher.register(function(payload) {
-    console.log(payload);
     var action = payload.action;
 
     switch(action) {
@@ -106,20 +102,17 @@ var ApplicationStore = assign(EventEmitter.prototype, {
         break;
 
       case ApplicationConstants.ActionTypes.GET_APPLICATIONS_SUCCESS:
-        // TODO: complete
         storeApplications(payload.data);
         ApplicationStore.emitChange();
         break;
 
       case ApplicationConstants.ActionTypes.GET_APPLICATION_SUCCESS:
-        // TODO: complete
         storeApplication(payload.data);
         ApplicationStore.emitChange();
         break;
 
       case ApplicationConstants.ActionTypes.ACCEPT_APPLICATION:
         ApplicationAPI.acceptApplication(payload.data, function(err, res) {
-          console.log(res);
           storeApplication(res);
           ApplicationStore.emitChange();
         });
@@ -127,7 +120,6 @@ var ApplicationStore = assign(EventEmitter.prototype, {
 
       case ApplicationConstants.ActionTypes.REJECT_APPLICATION:
         ApplicationAPI.rejectApplication(payload.data, function(err, res) {
-          console.log(res);
           storeApplication(res);
           ApplicationStore.emitChange();
         });
