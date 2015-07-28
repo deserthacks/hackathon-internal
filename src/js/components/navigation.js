@@ -4,6 +4,7 @@ var h = require('react-hyperscript');
 var React = require('react');
 var Router = require('react-router');
 
+var HackathonNavModule = require('./hackathon-nav.module');
 var SessionActions = require('../actions/session.actions');
 var SessionStore = require('../stores/session.store');
 
@@ -56,6 +57,7 @@ var Navigation = React.createClass({
     if (currentUser) {
       var username = currentUser.firstName + ' ' + currentUser.lastName;
       nav = h('ul', {className: 'nav navbar-nav'}, [
+        h(HackathonNavModule),
         h('li', [
           h(Router.Link, {to: 'applications'}, 'Applications')
         ])
