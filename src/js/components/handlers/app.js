@@ -18,7 +18,7 @@ var App = React.createClass({
 
   render: function render() {
     return (
-      h('div', {className: 'container'}, [
+      h('div', [
         h(NavigationBar),
         h(Router.RouteHandler)
       ])

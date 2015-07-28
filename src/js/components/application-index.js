@@ -80,20 +80,22 @@ var ApplicationIndex = React.createClass({
 
   render: function render() {
     return (
-      h('div', {className: 'row'}, [
-        h('section', {className: 'col-md-12'}, [
-          h('div', {className: 'page__header'}, [
-            h('h4', {className: 'page__title'}, 'Application index')
-          ])
-        ]),
-        h('section', {className: 'col-md-12'}, [
-          h('div', {className: 'page__body'}, [
-            h(ApplicationTable, {
-              applications: this.state.sortedApplications,
-              initialLength: this.state.applications.length,
-              filter: '',
-              onClick: this._onClick
-            })
+      h('div', {className: 'container'}, [
+        h('div', {className: 'row'}, [
+          h('section', {className: 'col-md-12'}, [
+            h('div', {className: 'page__header'}, [
+              h('h4', {className: 'page__title'}, 'Application index')
+            ])
+          ]),
+          h('section', {className: 'col-md-12'}, [
+            h('div', {className: 'page__body'}, [
+              h(ApplicationTable, {
+                applications: this.state.sortedApplications,
+                initialLength: this.state.applications.length,
+                filter: '',
+                onClick: this._onClick
+              })
+            ])
           ])
         ])
       ])
