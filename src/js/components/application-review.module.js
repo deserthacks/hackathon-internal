@@ -1,7 +1,10 @@
 'use strict';
 
+var classnames = require('classnames');
 var h = require('react-hyperscript');
+var moment = require('moment');
 var React = require('react');
+var Router = require('react-router');
 
 var ApplicationActions = require('../actions/application.actions');
 
@@ -14,30 +17,131 @@ var ApplicationReviewModule = React.createClass({
   },
 
   getInitialState: function getInitialState() {
-    return {};
+    return {
+      reviewNote: ''
+    };
   },
 
-  _onAccept: function _onAccept() {
-    ApplicationActions.acceptApplication(this.props.application);
+  _onAccept: function _onAccept(event) {
+    event.preventDefault();
+    var application = this.props.application;
+
+    application.reviewNote = this.state.reviewNote;
+    ApplicationActions.acceptApplication(application);
+
+    this.setState({
+      reviewNote: ''
+    });
   },
 
-  _onReject: function _onReject() {
-    ApplicationActions.rejectApplication(this.props.application);
+  _onReject: function _onReject(event) {
+    event.preventDefault();
+    var application = this.props.application;
+
+    application.reviewNote = this.state.reviewNote;
+    ApplicationActions.rejectApplication(application);
+
+    this.setState({
+      reviewNote: ''
+    });
+  },
+
+  _onFormChange: function _onFormChange(event) {
+    var target = event.target;
+    console.log(target.value);
+    this.setState({
+      reviewNote: target.value
+    });
   },
 
   render: function render() {
     var application = this.props.application;
+    var reviewerLink;
+    var reviewNote;
+
+    var panelClassname = classnames({
+      'module__content': true,
+      'panel': true,
+      'panel-success': application.accepted,
+      'panel-danger': (!application.accepted && application.status === 'reviewed'),
+      'panel-warning': (!application.accepted && application.status === 'received')
+    });
+    var acceptButtonClassname = classnames({
+      'btn btn-success': true,
+      'active': (application.accepted && application.status === 'reviewed')
+    });
+    var rejectButtonClassname = classnames({
+      'btn btn-danger': true,
+      'active': (!application.accepted && application.status === 'reviewed')
+    });
+
+    if (application.reviewedBy) {
+      reviewerLink = h(Router.Link, {to: 'dashboard', params: {id: application.reviewedBy._id}}, application.reviewedBy.firstName + ' ' + application.reviewedBy.lastName);
+    } else {
+      reviewerLink = h('em', 'No reviewer');
+    }
+
+    if (application.reviewNote) {
+      reviewNote =  h('p', application.reviewNote);
+    } else {
+      reviewNote = h('em', 'No note');
+    }
 
     return (
       h('div', {className: 'module__container'}, [
-        h('div', {className: 'module__content'}, [
-          h('h5', 'Decision: ' + (application.accepted ? 'Accepted' : 'Rejected')),
-          h('ul', {className: 'list-inline'}, [
-            h('li', [
-              h('button', {className: 'btn btn-success', onClick: this._onAccept}, 'Accept')
+        h('div', {className: panelClassname}, [
+          h('div', {className: 'panel-heading'}, [
+            h('h3', {className: 'panel-title'}, application.accepted ? 'Accepted' : 'Rejected'),
+            h('em', {className: 'pull-right'}, application.status === 'received' ? 'Pending' : 'Decided')
+          ]),
+          h('div', {className: 'panel-body'}, [
+            h('div', [
+              h('h5', 'Reviewer:'),
+              reviewerLink
             ]),
-            h('li', [
-              h('button', {className: 'btn btn-danger', onClick: this._onReject}, 'Reject')
+            h('div', [
+              h('h5', 'Reviewer note:'),
+              reviewNote,
+            ])
+          ]),
+          h('ul', {className: 'list-group'}, [
+            h('li', {
+              className: 'list-group-item',
+              title: moment(application.createdAt).format('dddd, MMMM Do YYYY, h:mm:ss a')
+            }, [
+              h('strong', 'Received '),
+              h('span', moment(application.createdAt).fromNow())
+            ]),
+            h('li', {
+              className: 'list-group-item',
+              title: moment(application.reviewedAt).format('dddd, MMMM Do YYYY, h:mm:ss a')
+            }, [
+              h('strong', 'Reviewed '),
+              h('span', moment(application.reviewedAt).fromNow())
+            ]),
+            h('li', {className: 'list-group-item'}, [
+              h('form', [
+                h('div', {className: 'form-group'}, [
+                  h('label', {htmlFor: 'reviewNote'}, 'Update'),
+                  h('textarea', {className: 'form-control', id: 'reviewNote', placeholder: 'Optional', onChange: this._onFormChange, value: this.state.reviewNote})
+                ]),
+                h('div', {className: 'form-group'}, [
+                  h('ul', {className: 'list-inline'}, [
+                    h('li', [
+                      h('button', {className: acceptButtonClassname, onClick: this._onAccept}, [
+                        h('span', {className: 'glyphicon glyphicon-ok-circle'}),
+                        h('span', ' Accept')
+                      ])
+                    ]),
+                    h('li', [
+                      h('button', {className: rejectButtonClassname, onClick: this._onReject}, [
+                        h('span', {className: 'glyphicon glyphicon-remove-circle'}),
+                        h('span', ' Reject')
+                      ])
+                    ])
+                  ])
+                ])
+              ])
             ])
           ])
         ])

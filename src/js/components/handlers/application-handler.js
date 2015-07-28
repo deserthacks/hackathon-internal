@@ -8,7 +8,7 @@ var ApplicationHandler = React.createClass({
 
   render: function render() {
     return (
-      h('div', {className: 'container'}, [
+      h('div', [
         h(Router.RouteHandler)
       ])
     );

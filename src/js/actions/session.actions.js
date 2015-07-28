@@ -29,6 +29,19 @@ var SessionActions = {
       action: SessionConstants.ActionTypes.GET_CURRENT_USER,
       data: response
     });
+  },
+
+  updateCurrentHackathon: function updateCurrentHackathon(hackathon) {
+    AppDispatcher.dispatch({
+      action: SessionConstants.ActionTypes.UPDATE_CURRENT_HACKATHON,
+      data: hackathon
+    });
+  },
+
+  clearCurrentHackathon: function clearCurrentHackathon() {
+    AppDispatcher.dispatch({
+      action: SessionConstants.ActionTypes.CLEAR_CURRENT_HACKATHON
+    });
   }
 
 };
