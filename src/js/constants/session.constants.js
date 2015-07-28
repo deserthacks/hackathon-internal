@@ -11,6 +11,8 @@ module.exports = {
     LOGOUT: null,
     CLEAR_TOKEN: null,
     GET_CURRENT_USER: null,
+    UPDATE_CURRENT_HACKATHON: null,
+    CLEAR_CURRENT_HACKATHON: null
   }),
 
   ActionSources: keyMirror({

@@ -7,9 +7,14 @@ var Immutable = require('immutable');
 var AppDispatcher = require('../dispatchers/app.dispatcher');
 var ApplicationAPI = require('../apis/application.api');
 var ApplicationConstants = require('../constants/application.constants');
+var SessionConstants = require('../constants/session.constants');
 
 // TODO: use immutable.js here
 var _applications = Immutable.List();
+
+function clearApplications() {
+  _applications = _applications.clear();
+}
 
 function storeApplication(application) {
   application = application || {};
@@ -89,10 +94,14 @@ var ApplicationStore = assign(EventEmitter.prototype, {
 
     switch(action) {
 
+      case SessionConstants.ActionTypes.UPDATE_CURRENT_HACKATHON:
+      case SessionConstants.ActionTypes.CLEAR_CURRENT_HACKATHON:
+        clearApplications();
+        ApplicationStore.emitChange();
+        // falls through
       case ApplicationConstants.ActionTypes.GET_APPLICATIONS:
-        console.log('getting applications');
         ApplicationAPI.getApplications(action.options, function() {
-          // ApplicationStore.emitChange();
+
         });
         break;
 

@@ -9,6 +9,7 @@ var SessionConstants = require('../constants/session.constants');
 
 // TODO: use immutable.js here
 var _user;
+var _hackathon;
 
 /**
  * Get an object from localStorage
@@ -18,6 +19,7 @@ var _user;
  */
 function getFromLocalStorage(entity) {
   var data = window.localStorage.getItem(entity);
+
   return JSON.parse(data);
 }
 
@@ -33,14 +35,9 @@ function setLocalStorage(entity, data) {
   window.localStorage.setItem(entity, parsedObject);
 }
 
-function clearUser() {
-  _user = undefined;
-}
-
-function clearLocalStorage() {
-  setLocalStorage('token', '');
-  setLocalStorage('user', '');
-  clearUser();
+function setCurrentHackathon(hackathon) {
+  _hackathon = hackathon;
+  setLocalStorage('hackathon', _hackathon);
 }
 
 function setUser(data) {
@@ -48,17 +45,40 @@ function setUser(data) {
   setLocalStorage('user', _user);
 }
 
+function clearUser() {
+  _user = undefined;
+}
+
+function clearHackathon() {
+  _hackathon = undefined;
+}
+
+function clearLocalStorage() {
+  setLocalStorage('token', '');
+  setLocalStorage('user', '');
+  setLocalStorage('hackathon', '');
+  clearUser();
+  clearHackathon();
+}
+
 var SessionStore = assign(EventEmitter.prototype, {
 
   getCurrentUser: function getCurrentUser() {
     var user = getFromLocalStorage('user');
+
     return user || _user;
   },
 
   getCurrentToken: function getCurrentToken() {
     var token = getFromLocalStorage('token');
-    console.log('token: %O', token);
-    return getFromLocalStorage(token);
+
+    return token;
+  },
+
+  getCurrentHackathon: function getCurrentHackathon() {
+    var hackathon = getFromLocalStorage('hackathon');
+
+    return _hackathon || hackathon;
   },
 
   addChangeListener: function addChangeListener(callback) {
@@ -74,15 +94,12 @@ var SessionStore = assign(EventEmitter.prototype, {
   },
 
   dispatcherIndex: AppDispatcher.register(function(payload) {
-    console.log(payload);
     var action = payload.action;
 
     switch(action) {
 
       case SessionConstants.ActionTypes.LOGIN:
-        console.log('login in user');
         SessionAPI.login(payload.data, function(err, res, token) {
-          console.log(res);
           if (res && token) {
             setLocalStorage('token', token);
             setUser(res);
@@ -92,18 +109,25 @@ var SessionStore = assign(EventEmitter.prototype, {
         break;
 
       case SessionConstants.ActionTypes.LOGOUT:
-        console.log('logging out user');
         SessionAPI.logout(function() {
-          setLocalStorage('token', '');
-          setLocalStorage('user', '');
-          clearUser();
+          clearLocalStorage();
           SessionStore.emitChange();
         });
         break;
 
       case SessionConstants.ActionTypes.CLEAR_TOKEN:
-        console.log('clearing local storage');
         clearLocalStorage();
+        SessionStore.emitChange();
+        break;
+
+      case SessionConstants.ActionTypes.UPDATE_CURRENT_HACKATHON:
+        setCurrentHackathon(payload.data);
+        SessionStore.emitChange();
+        break;
+
+      case SessionConstants.ActionTypes.CLEAR_CURRENT_HACKATHON:
+        setLocalStorage('hackathon', '');
+        clearHackathon();
         SessionStore.emitChange();
         break;
 
