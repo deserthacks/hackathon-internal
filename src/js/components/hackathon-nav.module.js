@@ -87,31 +87,32 @@ var HackathonNavModule = React.createClass({
     var hackathonName;
     var options;
 
-    if (currentHackathon && currentHackathon.subdomain) {
-      hackathonName = currentHackathon.subdomain;
+    if (currentHackathon && currentHackathon.season) {
+      hackathonName = currentHackathon.season;
       options = hackathons.map(function mapOptions(hackathon, index) {
-        return h('li', [
+        return h('li', {key: index}, [
           h('a', {
             id: index,
-            key: index,
+            className: 'hi-sudo-link',
             onClick: self._onSelection
-          }, hackathon.subdomain)
+          }, hackathon.season)
         ]);
       });
-      var allSeasonsOption = h('li', [
+      var allSeasonsOption = h('li', {key: 'all'}, [
         h('a', {
+          className: 'hi-sudo-link',
           onClick: self._onClearHackathon
         }, 'All seasons')
       ]);
       options.unshift(allSeasonsOption);
     } else {
       options = hackathons.map(function mapOptions(hackathon, index) {
-        return h('li', [
+        return h('li', {key: index}, [
           h('a', {
             id: index,
-            key: index,
+            className: 'hi-sudo-link',
             onClick: self._onSelection
-          }, hackathon.subdomain)
+          }, hackathon.season)
         ]);
       });
     }
