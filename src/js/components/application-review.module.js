@@ -22,8 +22,37 @@ var ApplicationReviewModule = React.createClass({
     };
   },
 
-  _onAccept: function _onAccept(event) {
-    event.preventDefault();
+  componentWillMount: function componentWillMount() {
+    if (window.addEventListener) {
+      window.addEventListener('keydown', this._onKeyEvent, true);
+    } else if (window.attachEvent) {
+      window.attachEvent('keydown', this._onKeyEvent);
+    }
+  },
+
+  componentWillUnmount: function componentWillUnmount() {
+    if (window.removeEventListener) {
+      window.removeEventListener('keydown', this._onKeyEvent, true);
+    } else if (window.detachEvent) {
+      window.detachEvent('keydown', this._onKeyEvent);
+    }
+  },
+
+  _onKeyEvent: function _onKeyEvent(event) {
+    if (event.target.localName === 'body') {
+      switch (event.keyCode) {
+        case 65:
+          this._onAccept(event);
+          break;
+
+        case 82:
+          this._onReject(event);
+          break;
+      }
+    }
+  },
+
+  _onAccept: function _onAccept() {
     var application = this.props.application;
 
     application.reviewNote = this.state.reviewNote;
@@ -34,8 +63,7 @@ var ApplicationReviewModule = React.createClass({
     });
   },
 
-  _onReject: function _onReject(event) {
-    event.preventDefault();
+  _onReject: function _onReject() {
     var application = this.props.application;
 
     application.reviewNote = this.state.reviewNote;
@@ -48,7 +76,7 @@ var ApplicationReviewModule = React.createClass({
 
   _onFormChange: function _onFormChange(event) {
     var target = event.target;
-    console.log(target.value);
+
     this.setState({
       reviewNote: target.value
     });
