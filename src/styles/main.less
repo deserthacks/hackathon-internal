@@ -32,6 +32,26 @@
   cursor: pointer;
 }
 
+// Overwrite bootstrap stuff
+._tab-panel {
+  padding: 15px;
+}
+
+._glyphicon {
+  margin-right: 5px;
+}
+
+._panel-title {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.panel-heading {
+  button {
+    margin-top: -5px;
+  }
+}
+
 /**
  * Global/General
  */
@@ -56,6 +76,7 @@ li.task {
   }
 }
 
+
 /**
  * Typography
  */
@@ -64,6 +85,11 @@ li.task {
   text-decoration: none;
   cursor: pointer;
 }
+
+.title--inline {
+  display: inline-block;
+}
+
 
 /**
  * Modules
@@ -75,10 +101,32 @@ li.task {
   }
 }
 
+
 /**
  * (Fixed Data) Table
  */
 
 .hi-table__row {
   border-bottom: 1px solid #d3d3d3;
+}
+
+
+/**
+ * Page
+ */
+
+.page__title {
+  margin-right: 5px;
+}
+
+
+/**
+ * Tabs
+ */
+
+.tab__content {
+  padding: 15px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
 }
