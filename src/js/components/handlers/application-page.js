@@ -36,8 +36,6 @@ var ApplicationPage = React.createClass({
     var self = this;
     params = params || self.props.params;
 
-    console.log(params);
-
     ApplicationAPI.getAdjacentApplications(params, function(err, res) {
       if (!err && res) {
         self.setState({
@@ -72,10 +70,7 @@ var ApplicationPage = React.createClass({
         var prevLink;
         var nextLink;
 
-        console.log('current: %s', application._id);
-
         if (prevApplication) {
-          console.log('prev: %s', prevApplication._id);
           prevLink = h('div', {className: 'pull-left'}, [
             h('span', {className: 'glyphicon glyphicon-chevron-left'}),
             h(Router.Link, {
@@ -86,7 +81,6 @@ var ApplicationPage = React.createClass({
           ]);
         }
         if (nextApplication) {
-          console.log('next: %s', nextApplication._id);
           nextLink = h('div', {className: 'pull-right'}, [
             h(Router.Link, {
               to: 'applicationPage',

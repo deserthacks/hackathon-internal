@@ -6,7 +6,7 @@ var h = require('react-hyperscript');
 
 var App = require('./components/handlers/app');
 var ApplicationConfig = require('./components/handlers/application-config');
-var ApplicationConfigModule = require('./components/application-config.module');
+var ApplicationConfigModule = require('./components/handlers/application-config.module');
 var ApplicationEditor = require('./components/handlers/application-editor');
 var ApplicationHandler = require('./components/handlers/application-handler');
 var ApplicationIndex = require('./components/application-index');
