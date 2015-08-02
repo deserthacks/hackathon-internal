@@ -7,12 +7,19 @@ var Router = require('react-router');
 // Flux
 var ApplicationActions = require('../actions/application.actions');
 var ApplicationStore = require('../stores/application.store');
+var SessionStore = require('../stores/session.store');
 
 // Components
 var ApplicationTable = require('./application-table');
 
 function _getApplications() {
   return ApplicationStore.getApplications();
+}
+
+function _getCurrentHackathon() {
+  var hackathon = SessionStore.getCurrentHackathon();
+
+  return hackathon;
 }
 
 var ApplicationIndex = React.createClass({
@@ -31,6 +38,12 @@ var ApplicationIndex = React.createClass({
   },
 
   componentWillMount: function componentWillMount() {
+    var hackathon = _getCurrentHackathon();
+
+    this.setState({
+      currentHackathon: hackathon
+    });
+
     this._filterRowsBy(this.state.filterBy);
   },
 
@@ -41,13 +54,6 @@ var ApplicationIndex = React.createClass({
 
   componentWillUnmount: function componentWillUnmount() {
     ApplicationStore.removeChangeListener(this._onChange);
-  },
-
-  _onChange: function _onChange() {
-    this.setState({
-      applications: _getApplications()
-    });
-    this._filterRowsBy(this.state.filterBy);
   },
 
   _onClick: function _onClick(event) {
@@ -78,24 +84,28 @@ var ApplicationIndex = React.createClass({
     });
   },
 
+  _onChange: function _onChange() {
+    var hackathon = _getCurrentHackathon();
+
+    this.setState({
+      applications: _getApplications(),
+      currentHackathon: hackathon
+    });
+
+    this._filterRowsBy(this.state.filterBy);
+  },
+
   render: function render() {
     return (
-      h('div', {className: 'container'}, [
-        h('div', {className: 'row'}, [
-          h('section', {className: 'col-md-12'}, [
-            h('div', {className: 'page__header'}, [
-              h('h4', {className: 'page__title'}, 'Application index')
-            ])
-          ]),
-          h('section', {className: 'col-md-12'}, [
-            h('div', {className: 'page__body'}, [
-              h(ApplicationTable, {
-                applications: this.state.sortedApplications,
-                initialLength: this.state.applications.length,
-                filter: '',
-                onClick: this._onClick
-              })
-            ])
+      h('div', {className: 'row'}, [
+        h('section', {className: 'col-md-12'}, [
+          h('div', {className: 'page__body'}, [
+            h(ApplicationTable, {
+              applications: this.state.sortedApplications,
+              initialLength: this.state.applications.length,
+              filter: '',
+              onClick: this._onClick
+            })
           ])
         ])
       ])
