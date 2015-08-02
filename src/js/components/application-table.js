@@ -8,8 +8,20 @@ var Router = require('react-router');
 
 var ROW_HEIGHT = 50;
 
-function renderAcceptedColumn(cellData) {
-  return h('div', {className: 'fdt-table__cell'}, [
+function renderAcceptedColumn(cellData, cellKey, rowData) {
+  var classname = 'fdt-table__cell ';
+
+  if (rowData.status === 'reviewed') {
+    if (cellData) {
+      classname += 'bg-success';
+    } else {
+      classname += 'bg-danger';
+    }
+  } else {
+    classname += 'bg-warning';
+  }
+
+  return h('div', {className: classname}, [
     h('span', cellData ? 'Accepted' : 'Rejected')
   ]);
 }
@@ -22,7 +34,7 @@ function renderCreatedAtColumn(cellData) {
 
 function renderHackathonColumn(cellData) {
   return h('div', {className: 'fdt-table__cell'}, [
-    h('span', cellData.subdomain)
+    h('span', cellData.season)
   ]);
 }
 
@@ -102,12 +114,12 @@ var ApplicationTable = React.createClass({
     if (application) {
       var status = '';
       if (application.accepted) {
-        status = ' bg-success';
+        //status = ' bg-success';
       } else {
-        status = ' bg-danger';
+        //status = ' bg-danger';
       }
       if (application.status === 'received') {
-        status = ' bg-warning';
+        //status = ' bg-warning';
       }
       classname += status;
     }

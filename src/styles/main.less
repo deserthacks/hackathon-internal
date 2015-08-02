@@ -3,7 +3,11 @@
 @import (inline) "node_modules/fixed-data-table/dist/fixed-data-table-base.css";
 @import (inline) "node_modules/fixed-data-table/dist/fixed-data-table-style.css";
 
+// Variables
 @primary-color: #5B83AD;
+
+@link-color:       @brand-primary;
+@link-hover-color: darken(@link-color, 15%);
 
 // Overwrite fixed-data-table styles
 .bg-success {
@@ -36,6 +40,10 @@ body {
   padding-top: 65px;
 }
 
+footer {
+  padding-top: 30px;
+}
+
 h1 {
   color: @primary-color;
 }
@@ -46,6 +54,15 @@ li.task {
   label {
     padding: 0 10px;
   }
+}
+
+/**
+ * Typography
+ */
+
+.hi-sudo-link {
+  text-decoration: none;
+  cursor: pointer;
 }
 
 /**
