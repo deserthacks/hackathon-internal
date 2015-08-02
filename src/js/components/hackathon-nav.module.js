@@ -117,7 +117,10 @@ var HackathonNavModule = React.createClass({
       });
     }
 
-    hackathonDropdown = h('li', {className: 'dropdown'}, [
+    hackathonDropdown = h('li', {
+      className: 'dropdown',
+      onMouseLeave: this._onToggleDropdown
+    }, [
       h('a', {
         href: '#',
         className: 'dropdown-toggle',
@@ -125,7 +128,8 @@ var HackathonNavModule = React.createClass({
         role: 'button',
         'aria-haspopup': true,
         'aria-expanded': false,
-        onClick: this._onToggleDropdown
+        onClick: this._onToggleDropdown,
+        onMouseOver: this._onToggleDropdown
       }, [
         h('span', hackathonName || 'All seasons'),
         h('span', {className: 'caret'})
