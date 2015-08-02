@@ -136,6 +136,55 @@ var ApplicationAPI = {
         return APIUtil.handleError(err, res, cb);
       }
     });
+  },
+
+  getApplicationConfigs: function getApplicationConfigs(options, cb) {
+    options = options || {};
+
+    var query = APIUtil.query(options, true);
+
+    xhr({
+      uri: 'http://localhost:3000/applications/configs?' + query,
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + APIUtil.getToken()
+      }
+    }, function response(err, res, body) {
+      if (!err && res.statusCode === 200) {
+        var parsedBody = JSON.parse(body);
+
+        return cb(null, parsedBody);
+      } else {
+        APIUtil.badResponse(res, function() {
+        });
+        return APIUtil.handleError(err, res, cb);
+      }
+    });
+  },
+
+  updateApplicationConfig: function updateApplicationConfig(application, cb) {
+    if (!application) {
+      cb('application required', null);
+    }
+
+    xhr({
+      uri: 'http://localhost:3000/applications/configs/' + application._id,
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + APIUtil.getToken()
+      },
+      body: JSON.stringify(application)
+    }, function response(err, res, body) {
+      if (!err && res.statusCode === 200) {
+        var parsedBody = JSON.parse(body);
+
+        return cb(null, parsedBody);
+      } else {
+        APIUtil.badResponse(res, function() {
+        });
+        return APIUtil.handleError(err, res, cb);
+      }
+    });
   }
 
 };
