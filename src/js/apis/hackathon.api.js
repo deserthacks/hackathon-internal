@@ -1,27 +1,22 @@
-'use strict';
+const xhr = require('xhr');
 
-var xhr = require('xhr');
+const APIUtil = require('../utils/api-util');
 
-var APIUtil = require('../utils/api-util');
-
-var HackathonAPI = {
-
+const HackathonAPI = {
   getHackathons: function getHackathons(cb) {
     // TODO: setup better domain name
     xhr({
       uri: 'http://localhost:3000/hackathons',
-      method: 'GET'
-    }, function response(err, res, body) {
+      method: 'GET',
+    }, (err, res, body) => {
       if (!err && res.statusCode === 200) {
-        var parsedBody = JSON.parse(body);
+        const parsedBody = JSON.parse(body);
 
         return cb(null, parsedBody);
-      } else {
-        return APIUtil.handleError(err, res, cb);
       }
+      return APIUtil.handleError(err, res, cb);
     });
-  }
-
+  },
 };
 
 module.exports = HackathonAPI;

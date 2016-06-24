@@ -1,16 +1,9 @@
-'use strict';
+const h = require('react-hyperscript');
 
-var h = require('react-hyperscript');
-var React = require('react');
 
-var ApplicationEditor = React.createClass({
+const ApplicationEditor = () => (
+  h('div', '')
+);
 
-  render: function render() {
-    return(
-      h('div', '')
-    );
-  }
-
-});
 
 module.exports = ApplicationEditor;

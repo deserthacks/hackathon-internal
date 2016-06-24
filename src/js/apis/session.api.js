@@ -1,29 +1,23 @@
-'use strict';
+const xhr = require('xhr');
 
-var xhr = require('xhr');
+const APIUtil = require('../utils/api-util');
 
-var APIUtil = require('../utils/api-util');
+const SessionAPI = {
 
-var SessionAPI = {
-
-  login: function login(data, cb) {
-    data = data || {};
-
-    console.log(data);
-
+  login: function login(data = {}, cb) {
     // TODO: setup better domain name
     xhr({
       uri: 'http://localhost:3000/auth/local',
       method: 'POST',
-      body: JSON.stringify(data)
-    }, function response(err, res, body) {
+      body: JSON.stringify(data),
+    }, (err, res, body) => {
       if (!err && res.statusCode === 200) {
-        var parsedBody = JSON.parse(body);
+        const parsedBody = JSON.parse(body);
 
         return cb(null, parsedBody, res.headers['x-bearer-token']);
-      } else {
-        return APIUtil.handleError(err, res, cb);
       }
+
+      return APIUtil.handleError(err, res, cb);
     });
   },
 
@@ -33,18 +27,18 @@ var SessionAPI = {
       uri: 'http://localhost:3000/auth',
       method: 'DELETE',
       headers: {
-        'Authorization': 'Bearer ' + APIUtil.getToken()
-      }
-    }, function response(err, res, body) {
+        Authorization: `Bearer ${APIUtil.getToken()}`,
+      },
+    }, (err, res, body) => {
       if (!err && res.statusCode === 200) {
-        var parsedBody = JSON.parse(body);
+        const parsedBody = JSON.parse(body);
 
         return cb(null, parsedBody);
-      } else {
-        return APIUtil.handleError(err, res, cb);
       }
+
+      return APIUtil.handleError(err, res, cb);
     });
-  }
+  },
 
 };
 

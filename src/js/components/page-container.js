@@ -1,16 +1,9 @@
-'use strict';
+const h = require('react-hyperscript');
 
-var h = require('react-hyperscript');
-var React = require('react');
 
-var PageContainer = React.createClass({
+const PageContainer = () => (
+  h('div', '')
+);
 
-  render: function render() {
-    return(
-      h('div', '')
-    );
-  }
-
-});
 
 module.exports = PageContainer;

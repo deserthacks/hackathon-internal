@@ -1,29 +1,27 @@
-'use strict';
+const h = require('react-hyperscript');
+const React = require('react');
+const Router = require('react-router');
 
-var h = require('react-hyperscript');
-var React = require('react');
-var Router = require('react-router');
+const ApplicationStore = require('../../stores/application.store');
+const SessionStore = require('../../stores/session.store');
 
-var ApplicationStore = require('../../stores/application.store');
-var SessionStore = require('../../stores/session.store');
-
-var tabContent = {
-  APPLICATIONS: 'Applications'
+const tabContent = {
+  APPLICATIONS: 'Applications',
 };
 
 function getApplicationStats() {
-  var stats = ApplicationStore.getStats();
+  const stats = ApplicationStore.getStats();
 
   return stats;
 }
 
 function getCurrentHackathon() {
-  var hackathon = SessionStore.getCurrentHackathon();
+  const hackathon = SessionStore.getCurrentHackathon();
 
   return hackathon;
 }
 
-var DashboardHome = React.createClass({
+const DashboardHome = React.createClass({
 
   displayName: 'DashboardHome',
 
@@ -33,44 +31,44 @@ var DashboardHome = React.createClass({
 
   render: function render() {
     return (
-      h('div', {className: 'row'}, [
-        h('div', {className: 'col-md-4'}, [
-          h('div', {className: 'panel panel-default'}, [
-            h('div', {className: 'panel-heading'}, [
-              h('h3', {className: 'panel-title'}, 'Applications')
+      h('div', { className: 'row' }, [
+        h('div', { className: 'col-md-4' }, [
+          h('div', { className: 'panel panel-default' }, [
+            h('div', { className: 'panel-heading' }, [
+              h('h3', { className: 'panel-title' }, 'Applications'),
             ]),
-            h('div', {className: 'panel-body'}, [
-              h('p', 'Eventual (realtime?) stats here i.e. received/reviewed, etc')
-            ])
-          ])
+            h('div', { className: 'panel-body' }, [
+              h('p', 'Eventual (realtime?) stats here i.e. received/reviewed, etc'),
+            ]),
+          ]),
         ]),
-        h('div', {className: 'col-md-4'}, [
-          h('div', {className: 'panel panel-default'}, [
-            h('div', {className: 'panel-heading'}, [
-              h('h3', {className: 'panel-title'}, 'Metrics')
+        h('div', { className: 'col-md-4' }, [
+          h('div', { className: 'panel panel-default' }, [
+            h('div', { className: 'panel-heading' }, [
+              h('h3', { className: 'panel-title' }, 'Metrics'),
             ]),
-            h('div', {className: 'panel-body'}, [
-              h('p', 'Graphs')
-            ])
-          ])
+            h('div', { className: 'panel-body' }, [
+              h('p', 'Graphs'),
+            ]),
+          ]),
         ]),
-        h('div', {className: 'col-md-4'}, [
-          h('div', {className: 'panel panel-default'}, [
-            h('div', {className: 'panel-heading'}, [
-              h('h3', {className: 'panel-title'}, 'Help/mentor tickets')
+        h('div', { className: 'col-md-4' }, [
+          h('div', { className: 'panel panel-default' }, [
+            h('div', { className: 'panel-heading' }, [
+              h('h3', { className: 'panel-title' }, 'Help/mentor tickets'),
             ]),
-            h('div', {className: 'panel-body'}, [
-              h('p', 'List of current help tickets')
-            ])
-          ])
-        ])
+            h('div', { className: 'panel-body' }, [
+              h('p', 'List of current help tickets'),
+            ]),
+          ]),
+        ]),
       ])
     );
-  }
+  },
 
 });
 
-var Dashboard = React.createClass({
+const Dashboard = React.createClass({
 
   displayName: 'Dashboard',
 
@@ -79,64 +77,64 @@ var Dashboard = React.createClass({
   getInitialState: function getInitialState() {
     return {
       activeTab: 0,
-      applicationStats: {}
+      applicationStats: {},
     };
   },
 
   componentWillMount: function componentWillMount() {
-    var hackathon = getCurrentHackathon();
-    var tabs = this._setTabs(hackathon);
+    const hackathon = getCurrentHackathon();
+    const tabs = this.setTabs(hackathon);
 
     this.setState({
       currentHackathon: getCurrentHackathon(),
-      tabs: tabs
+      tabs,
     });
-  },
-
-  componentWillUnmount: function componentWillUnmount() {
-    SessionStore.removeChangeListener(this._onChange);
   },
 
   componentDidMount: function componentDidMount() {
     this.setState({
-      applicationStats: getApplicationStats()
+      applicationStats: getApplicationStats(),
     });
 
-    SessionStore.addChangeListener(this._onChange);
+    SessionStore.addChangeListener(this.onChange);
   },
 
-  _onChange: function _onChange() {
-    var hackathon = getCurrentHackathon();
-    var tabs = this._setTabs(hackathon);
+  componentWillUnmount: function componentWillUnmount() {
+    SessionStore.removeChangeListener(this.onChange);
+  },
+
+  onChange: function onChange() {
+    const hackathon = getCurrentHackathon();
+    const tabs = this.setTabs(hackathon);
 
     this.setState({
       currentHackathon: hackathon,
-      tabs: tabs
+      tabs,
     });
   },
 
-  _onSelection: function _onSelection(event) {
-    var target = event.target;
+  onSelection: function onSelection(event) {
+    const target = event.target;
 
     console.log(target.getAttribute('data-tab'));
 
     this.setState({
-      activeTab: Number(target.getAttribute('data-tab'))
+      activeTab: Number(target.getAttribute('data-tab')),
     });
   },
 
-  _setTabs: function _setTabs(hackathon) {
-    var tabs = [{
-      name: 'Dashboard'
+  setTabs: function setTabs(hackathon) {
+    const tabs = [{
+      name: 'Dashboard',
     }];
-    var hackathonTabs = [{
-      name: 'Applications'
+    const hackathonTabs = [{
+      name: 'Applications',
     }, {
-      name: 'Emails'
+      name: 'Emails',
     }, {
-      name: 'Announcements'
+      name: 'Announcements',
     }, {
-      name: 'Mentors'
+      name: 'Mentors',
     }];
 
     if (hackathon) {
@@ -146,14 +144,14 @@ var Dashboard = React.createClass({
     return tabs;
   },
 
-  _getNavTabs: function _getNavTabs() {
-    var self = this;
-    var activeTab = this.state.activeTab;
+  getNavTabs: function getNavTabs() {
+    const self = this;
+    const activeTab = this.state.activeTab;
 
-    var tabs = this.state.tabs.map(function(tab, index) {
-      return h('li', {
+    const tabs = this.state.tabs.map((tab, index) => (
+      h('li', {
         className: index === activeTab ? 'active' : '',
-        role: 'presentation'
+        role: 'presentation',
       }, [
         h('a', {
           className: 'hi-sudo-link',
@@ -161,25 +159,25 @@ var Dashboard = React.createClass({
           'data-toggle': 'tab',
           'data-tab': index,
           role: 'tab',
-          onClick: self._onSelection,
-        }, tab.name)
-      ]);
-    });
+          onClick: self.onSelection,
+        }, tab.name),
+      ])
+    ));
 
-    return h('ul', {className: 'nav nav-tabs', role: 'tablist'}, [
-      tabs
+    return h('ul', { className: 'nav nav-tabs', role: 'tablist' }, [
+      tabs,
     ]);
   },
 
-  _getContentTabs: function _getContentTabs() {
-    var activeTab = this.state.activeTab;
-    var tabClassname = 'tab-pane _tab-panel';
+  getContentTabs: function getContentTabs() {
+    const activeTab = this.state.activeTab;
+    const tabClassname = 'tab-pane _tab-panel';
 
-    var tabs = this.state.tabs.map(function mapContentTabs(tab, index) {
+    const tabs = this.state.tabs.map((tab, index) => {
       if (index !== activeTab) {
-        return;
+        return undefined;
       }
-      var content;
+      let content;
 
       switch (tab.name) {
         case tabContent.APPLICATIONS:
@@ -192,11 +190,11 @@ var Dashboard = React.createClass({
       }
 
       return h('div', {
-        className: index === activeTab ? tabClassname + ' active' : tabClassname,
+        className: index === activeTab ? `${tabClassname} active` : tabClassname,
         id: tab.name.toLowerCase(),
-        role: 'tabpanel'
+        role: 'tabpanel',
       }, [
-        content
+        content,
       ]);
     });
 
@@ -204,60 +202,59 @@ var Dashboard = React.createClass({
   },
 
   render: function render() {
-    var hackathon = this.state.currentHackathon;
-    var tabs = this._getNavTabs();
-    var content = this._getContentTabs();
+    const hackathon = this.state.currentHackathon;
+    const tabs = this.getNavTabs();
+    const content = this.getContentTabs();
 
     if (hackathon) {
       return (
-        h('div', {className: 'container'}, [
-          h('div', {className: 'row'}, [
-            h('section', {className: 'col-md-12'}, [
-              h('div', {className: 'page__header'}, [
-                h('h1', {className: 'page__title'}, hackathon.season)
-              ])
+        h('div', { className: 'container' }, [
+          h('div', { className: 'row' }, [
+            h('section', { className: 'col-md-12' }, [
+              h('div', { className: 'page__header' }, [
+                h('h1', { className: 'page__title' }, hackathon.season),
+              ]),
             ]),
-            h('section', {className: 'col-md-12'}, [
-              h('div', {className: 'page__body'}, [
+            h('section', { className: 'col-md-12' }, [
+              h('div', { className: 'page__body' }, [
                 tabs,
-                content
-              ])
-            ])
-          ])
-        ])
-      );
-    } else {
-      return (
-        h('div', {className: 'container'}, [
-          h('div', {className: 'row'}, [
-            h('section', {className: 'col-md-12'}, [
-              h('div', {className: 'page__header'}, [
-                h('h1', {className: 'page__title'}, 'hackathon-internal'),
-                h('p', 'Internal tools for hackathons')
-              ])
+                content,
+              ]),
             ]),
-            h('section', {className: 'col-md-12'}, [
-              h('div', {className: 'page__body'}, [
-                h('div', {className: 'row'}, [
-                  h('div', {className: 'col-md-4'}, [
-                    h('h5', 'Applications received'),
-                    h('span', this.state.applicationStats.received)
-                  ]),
-                  h('div', {className: 'col-md-4'}, [
-                    h('h5', 'Applications reviewed')
-                  ]),
-                  h('div', {className: 'col-md-4'}, [
-                    h('h5', 'Content')
-                  ])
-                ])
-              ])
-            ])
-          ])
+          ]),
         ])
       );
     }
 
-  }
+    return (
+      h('div', { className: 'container' }, [
+        h('div', { className: 'row' }, [
+          h('section', { className: 'col-md-12' }, [
+            h('div', { className: 'page__header' }, [
+              h('h1', { className: 'page__title' }, 'hackathon-internal'),
+              h('p', 'Internal tools for hackathons'),
+            ]),
+          ]),
+          h('section', { className: 'col-md-12' }, [
+            h('div', { className: 'page__body' }, [
+              h('div', { className: 'row' }, [
+                h('div', { className: 'col-md-4' }, [
+                  h('h5', 'Applications received'),
+                  h('span', this.state.applicationStats.received),
+                ]),
+                h('div', { className: 'col-md-4' }, [
+                  h('h5', 'Applications reviewed'),
+                ]),
+                h('div', { className: 'col-md-4' }, [
+                  h('h5', 'Content'),
+                ]),
+              ]),
+            ]),
+          ]),
+        ]),
+      ])
+    );
+  },
 
 });
 

@@ -1,10 +1,8 @@
-'use strict';
+const qs = require('qs');
 
-var qs = require('qs');
+const SessionActions = require('../actions/session.actions');
 
-var SessionActions = require('../actions/session.actions');
-
-var APIUtil = {
+const APIUtil = {
 
   /**
    * Function used to handle a bad response
@@ -24,7 +22,7 @@ var APIUtil = {
    * @return {String} token
    */
   getToken: function getToken() {
-    var token = window.localStorage.getItem('token');
+    const token = window.localStorage.getItem('token');
 
     return JSON.parse(token);
   },
@@ -35,7 +33,7 @@ var APIUtil = {
    * @return {Object} hackathon
    */
   getHackathon: function getHackathon() {
-    var hackathon = window.localStorage.getItem('hackathon');
+    const hackathon = window.localStorage.getItem('hackathon');
 
     return JSON.parse(hackathon);
   },
@@ -50,25 +48,22 @@ var APIUtil = {
    * @return {Function} callback
    */
   handleError: function handleError(err, res, cb) {
-    cb = cb || console.log;
+    const callback = cb || console.log;
 
     if (!err) {
-      return cb(res, null);
-    } else {
-      return cb(err, null);
+      return callback(res, null);
     }
+
+    return callback(err, null);
   },
 
-  query: function query(options, filterHackathon) {
-    options = options || {};
-
+  query: function query(options = {}, filterHackathon) {
     if (filterHackathon) {
-      var hackathon = this.getHackathon();
-      options.hackathon = hackathon._id;
+      options.hackathon = this.getHackathon()._id;
     }
 
     return qs.stringify(options);
-  }
+  },
 
 };
 

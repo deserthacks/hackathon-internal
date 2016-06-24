@@ -1,15 +1,13 @@
-'use strict';
+const assign = require('object-assign');
+const EventEmitter = require('events').EventEmitter;
 
-var assign = require('object-assign');
-var EventEmitter = require('events').EventEmitter;
-
-var AppDispatcher = require('../dispatchers/app.dispatcher');
-var SessionAPI = require('../apis/session.api');
-var SessionConstants = require('../constants/session.constants');
+const AppDispatcher = require('../dispatchers/app.dispatcher');
+const SessionAPI = require('../apis/session.api');
+const SessionConstants = require('../constants/session.constants');
 
 // TODO: use immutable.js here
-var _user;
-var _hackathon;
+let _user;
+let _hackathon;
 
 /**
  * Get an object from localStorage
@@ -18,7 +16,7 @@ var _hackathon;
  * @return {Object} JSON parsed object
  */
 function getFromLocalStorage(entity) {
-  var data = window.localStorage.getItem(entity);
+  const data = window.localStorage.getItem(entity);
 
   return JSON.parse(data);
 }
@@ -30,7 +28,7 @@ function getFromLocalStorage(entity) {
  * @param {Object} data - Data to be stringified and stored
  */
 function setLocalStorage(entity, data) {
-  var parsedObject = JSON.stringify(data);
+  const parsedObject = JSON.stringify(data);
 
   window.localStorage.setItem(entity, parsedObject);
 }
@@ -61,22 +59,22 @@ function clearLocalStorage() {
   clearHackathon();
 }
 
-var SessionStore = assign(EventEmitter.prototype, {
+const SessionStore = assign(EventEmitter.prototype, {
 
   getCurrentUser: function getCurrentUser() {
-    var user = getFromLocalStorage('user');
+    const user = getFromLocalStorage('user');
 
     return user || _user;
   },
 
   getCurrentToken: function getCurrentToken() {
-    var token = getFromLocalStorage('token');
+    const token = getFromLocalStorage('token');
 
     return token;
   },
 
   getCurrentHackathon: function getCurrentHackathon() {
-    var hackathon = getFromLocalStorage('hackathon');
+    const hackathon = getFromLocalStorage('hackathon');
 
     return _hackathon || hackathon;
   },
@@ -93,13 +91,12 @@ var SessionStore = assign(EventEmitter.prototype, {
     this.emit(SessionConstants.CHANGE_EVENT);
   },
 
-  dispatcherIndex: AppDispatcher.register(function(payload) {
-    var action = payload.action;
+  dispatcherIndex: AppDispatcher.register((payload) => {
+    const action = payload.action;
 
-    switch(action) {
-
+    switch (action) {
       case SessionConstants.ActionTypes.LOGIN:
-        SessionAPI.login(payload.data, function(err, res, token) {
+        SessionAPI.login(payload.data, (err, res, token) => {
           if (res && token) {
             setLocalStorage('token', token);
             setUser(res);
@@ -109,7 +106,7 @@ var SessionStore = assign(EventEmitter.prototype, {
         break;
 
       case SessionConstants.ActionTypes.LOGOUT:
-        SessionAPI.logout(function() {
+        SessionAPI.logout(() => {
           clearLocalStorage();
           SessionStore.emitChange();
         });
@@ -131,8 +128,11 @@ var SessionStore = assign(EventEmitter.prototype, {
         SessionStore.emitChange();
         break;
 
+      default:
+        // do nothing
+        break;
     }
-  })
+  }),
 
 });
 

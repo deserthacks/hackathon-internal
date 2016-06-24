@@ -1,14 +1,13 @@
-'use strict';
+const h = require('react-hyperscript');
+const React = require('react');
+const Router = require('react-router');
 
-var h = require('react-hyperscript');
-var React = require('react');
-var Router = require('react-router');
+const HackathonAPI = require('../apis/hackathon.api');
+const SessionActions = require('../actions/session.actions');
+const SessionStore = require('../stores/session.store');
 
-var HackathonAPI = require('../apis/hackathon.api');
-var SessionActions = require('../actions/session.actions');
-var SessionStore = require('../stores/session.store');
 
-var HackathonNavModule = React.createClass({
+const HackathonNavModule = React.createClass({
 
   displayName: 'HackathonNavModule',
 
@@ -18,132 +17,130 @@ var HackathonNavModule = React.createClass({
     return {
       currentHackathon: undefined,
       hackathons: [],
-      hackathonDropdownExpanded: false
+      hackathonDropdownExpanded: false,
     };
   },
 
-  componentDidMount: function componentDidMount() {
-    var self = this;
-    var currentHackathon = SessionStore.getCurrentHackathon();
+  componentWillMount: function componentDidMount() {
+    SessionStore.addChangeListener(this.onChange);
 
-    HackathonAPI.getHackathons(function updateState(err, res) {
-      self.setState({
-        hackathons: res,
-        currentHackathon: currentHackathon
-      });
+    this.setState({
+      currentHackathon: SessionStore.getCurrentHackathon(),
     });
   },
 
-  componentWillMount: function componentDidMount() {
-    SessionStore.addChangeListener(this._onChange);
+  componentDidMount: function componentDidMount() {
+    const self = this;
+    const currentHackathon = SessionStore.getCurrentHackathon();
 
-    this.setState({
-      currentHackathon: SessionStore.getCurrentHackathon()
+    HackathonAPI.getHackathons((err, res) => {
+      self.setState({
+        hackathons: res,
+        currentHackathon,
+      });
     });
   },
 
   componentWillUnmount: function componentWillUnmount() {
-    SessionStore.removeChangeListener(this._onChange);
+    SessionStore.removeChangeListener(this.onChange);
   },
 
-  _onChange: function _onChange() {
+  onChange: function onChange() {
     this.setState({
-      currentHackathon: SessionStore.getCurrentHackathon()
+      currentHackathon: SessionStore.getCurrentHackathon(),
     });
   },
 
-  _onClearHackathon: function _onClearHackathon() {
+  onClearHackathon: function onClearHackathon() {
     SessionActions.clearCurrentHackathon();
 
     this.setState({
-      hackathonDropdownExpanded: false
+      hackathonDropdownExpanded: false,
     });
   },
 
-  _onSelection: function _onSelection(event) {
-    var target = event.target;
-    var hackathon = this.state.hackathons[target.id];
+  onSelection: function onSelection(event) {
+    const target = event.target;
+    const hackathon = this.state.hackathons[target.id];
 
     SessionActions.updateCurrentHackathon(hackathon);
 
     this.setState({
-      hackathonDropdownExpanded: false
+      hackathonDropdownExpanded: false,
     });
   },
 
-  _onToggleDropdown: function _onToggleDropdown(event) {
+  onToggleDropdown: function onToggleDropdown(event) {
     event.preventDefault();
 
     this.setState({
-      hackathonDropdownExpanded: !this.state.hackathonDropdownExpanded
+      hackathonDropdownExpanded: !this.state.hackathonDropdownExpanded,
     });
   },
 
   render: function render() {
-    var self = this;
-    var currentHackathon = this.state.currentHackathon;
-    var hackathons = this.state.hackathons;
-    var hackathonDropdown;
-    var hackathonName;
-    var options;
+    const self = this;
+    const currentHackathon = this.state.currentHackathon;
+    const hackathons = this.state.hackathons;
+    let hackathonName;
+    let options;
 
     if (currentHackathon && currentHackathon.season) {
       hackathonName = currentHackathon.season;
-      options = hackathons.map(function mapOptions(hackathon, index) {
-        return h('li', {key: index}, [
+      options = hackathons.map((hackathon, index) => (
+        h('li', { key: index }, [
           h('a', {
             id: index,
             className: 'hi-sudo-link',
-            onClick: self._onSelection
-          }, hackathon.season)
-        ]);
-      });
-      var allSeasonsOption = h('li', {key: 'all'}, [
+            onClick: self.onSelection,
+          }, hackathon.season),
+        ])
+      ));
+      const allSeasonsOption = h('li', { key: 'all' }, [
         h('a', {
           className: 'hi-sudo-link',
-          onClick: self._onClearHackathon
-        }, 'All seasons')
+          onClick: self.onClearHackathon,
+        }, 'All seasons'),
       ]);
       options.unshift(allSeasonsOption);
     } else {
-      options = hackathons.map(function mapOptions(hackathon, index) {
-        return h('li', {key: index}, [
+      options = hackathons.map((hackathon, index) => (
+        h('li', { key: index }, [
           h('a', {
             id: index,
             className: 'hi-sudo-link',
-            onClick: self._onSelection
-          }, hackathon.season)
-        ]);
-      });
+            onClick: self.onSelection,
+          }, hackathon.season),
+        ])
+      ));
     }
 
-    hackathonDropdown = h('li', {
-      className: 'dropdown',
-      onMouseLeave: this._onToggleDropdown
-    }, [
-      h('a', {
-        href: '#',
-        className: 'dropdown-toggle',
-        'data-toggle': 'dropdown',
-        role: 'button',
-        'aria-haspopup': true,
-        'aria-expanded': false,
-        onClick: this._onToggleDropdown,
-        onMouseOver: this._onToggleDropdown
+    return (
+      h('li', {
+        className: 'dropdown',
+        onMouseLeave: this.onToggleDropdown,
       }, [
-        h('span', hackathonName || 'All seasons'),
-        h('span', {className: 'caret'})
-      ]),
-      h('ul', {className: 'dropdown-menu', style: {
-        'display': this.state.hackathonDropdownExpanded ? 'block' : 'none'
-      }}, options)
-    ]);
-
-    return(
-      hackathonDropdown
+        h('a', {
+          href: '#',
+          className: 'dropdown-toggle',
+          'data-toggle': 'dropdown',
+          role: 'button',
+          'aria-haspopup': true,
+          'aria-expanded': false,
+          onClick: this.onToggleDropdown,
+          onMouseOver: this.onToggleDropdown,
+        }, [
+          h('span', hackathonName || 'All seasons'),
+          h('span', { className: 'caret' }),
+        ]),
+        h('ul', { className: 'dropdown-menu', style: {
+          display: this.state.hackathonDropdownExpanded ? 'block' : 'none',
+        } }, options),
+      ])
     );
-  }
+  },
 
 });
+
 
 module.exports = HackathonNavModule;

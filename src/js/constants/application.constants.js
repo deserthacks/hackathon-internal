@@ -1,6 +1,4 @@
-'use strict';
-
-var keyMirror = require('react/lib/keyMirror');
+const keyMirror = require('react/lib/keyMirror');
 
 module.exports = {
 
@@ -15,12 +13,12 @@ module.exports = {
     GET_APPLICATION_FAILURE: null,
 
     ACCEPT_APPLICATION: null,
-    REJECT_APPLICATION: null
+    REJECT_APPLICATION: null,
   }),
 
   ActionSources: keyMirror({
     SERVER_ACTION: null,
-    VIEW_ACTION: null
-  })
+    VIEW_ACTION: null,
+  }),
 
 };

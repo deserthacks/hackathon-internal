@@ -1,13 +1,11 @@
-'use strict';
+const h = require('react-hyperscript');
+const React = require('react');
+const Router = require('react-router');
 
-var h = require('react-hyperscript');
-var React = require('react');
-var Router = require('react-router');
+const SessionActions = require('../../actions/session.actions');
+const SessionStore = require('../../stores/session.store');
 
-var SessionActions = require('../../actions/session.actions');
-var SessionStore = require('../../stores/session.store');
-
-var LoginPage = React.createClass({
+const LoginPage = React.createClass({
 
   displayName: 'LoginPage',
 
@@ -15,23 +13,23 @@ var LoginPage = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      applicationStats: {}
+      applicationStats: {},
     };
   },
 
   componentDidMount: function componentDidMount() {
-    SessionStore.addChangeListener(this._onChange);
+    SessionStore.addChangeListener(this.onChange);
 
     React.findDOMNode(this.refs.email).focus();
   },
 
   componentWillUnmount: function componentWillUnmount() {
-    SessionStore.removeChangeListener(this._onChange);
+    SessionStore.removeChangeListener(this.onChange);
   },
 
-  _onChange: function _onChange() {
+  onChange: function onChange() {
     this.setState({
-      currentUser: SessionStore.getCurrentUser()
+      currentUser: SessionStore.getCurrentUser(),
     });
 
     if (this.state.currentUser) {
@@ -39,19 +37,19 @@ var LoginPage = React.createClass({
     }
   },
 
-  _onFormChange: function _onFormChange(event) {
-    var target = event.target;
-    var state = {};
+  onFormChange: function onFormChange(event) {
+    const target = event.target;
+    const state = {};
 
     state[target.id] = target.value;
     this.setState(state);
   },
 
-  _onSubmit: function _onSubmit(event) {
+  onSubmit: function onSubmit(event) {
     event.preventDefault();
-    var request = {
+    const request = {
       email: this.state.email,
-      password: this.state.password
+      password: this.state.password,
     };
 
     SessionActions.login(request);
@@ -59,48 +57,48 @@ var LoginPage = React.createClass({
 
   render: function render() {
     return (
-      h('div', {className: 'container'}, [
-        h('div', {className: 'row'}, [
-          h('div', {className: 'col-md-4 col-md-offset-4'}, [
-            h('div', {className: 'panel panel-default'}, [
-              h('div', {className: 'panel-heading'}, [
-                h('h3', {className: 'panel-title'}, 'Tools Login')
+      h('div', { className: 'container' }, [
+        h('div', { className: 'row' }, [
+          h('div', { className: 'col-md-4 col-md-offset-4' }, [
+            h('div', { className: 'panel panel-default' }, [
+              h('div', { className: 'panel-heading' }, [
+                h('h3', { className: 'panel-title' }, 'Tools Login'),
               ]),
-              h('div', {className: 'panel-body'}, [
+              h('div', { className: 'panel-body' }, [
                 h('form', [
-                  h('div', {className: 'form-group'}, [
-                    h('label', {htmlFor: 'email'}, 'Email address'),
+                  h('div', { className: 'form-group' }, [
+                    h('label', { htmlFor: 'email' }, 'Email address'),
                     h('input', {
                       type: 'text',
                       className: 'form-control',
                       id: 'email',
                       ref: 'email',
-                      onChange: this._onFormChange
-                    })
+                      onChange: this.onFormChange,
+                    }),
                   ]),
-                  h('div', {className: 'form-group'}, [
-                    h('label', {htmlFor: 'password'}, 'Password'),
+                  h('div', { className: 'form-group' }, [
+                    h('label', { htmlFor: 'password' }, 'Password'),
                     h('input', {
                       type: 'password',
                       className: 'form-control',
                       id: 'password',
-                      onChange: this._onFormChange
-                    })
+                      onChange: this.onFormChange,
+                    }),
                   ]),
-                  h('div', {className: 'form-group'}, [
+                  h('div', { className: 'form-group' }, [
                     h('button', {
                       className: 'btn btn-default',
-                      onClick: this._onSubmit
-                    }, 'Login')
-                  ])
-                ])
-              ])
-            ])
-          ])
-        ])
+                      onClick: this.onSubmit,
+                    }, 'Login'),
+                  ]),
+                ]),
+              ]),
+            ]),
+          ]),
+        ]),
       ])
     );
-  }
+  },
 
 });
 

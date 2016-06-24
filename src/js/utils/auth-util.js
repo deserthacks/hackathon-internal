@@ -1,8 +1,6 @@
-'use strict';
+const SessionStore = require('../stores/session.store');
 
-var SessionStore = require('../stores/session.store');
-
-var AuthUtil = {
+const AuthUtil = {
 
   notAuthenticated: function notAuthenticated(nextState, transition) {
     if (SessionStore.getCurrentUser() === undefined) {
@@ -20,13 +18,13 @@ var AuthUtil = {
 
   authenticateAs: function authenticateAs(nextState, transition, role) {
     if (SessionStore.getCurrentUser() !== undefined) {
-      var currentUserRole = SessionStore.getCurrentUser().role;
+      const currentUserRole = SessionStore.getCurrentUser().role;
       if (currentUserRole !== role) {
         transition.abort();
         transition.redirect('login');
       }
     }
-  }
+  },
 };
 
 module.exports = AuthUtil;

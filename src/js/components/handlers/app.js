@@ -1,32 +1,22 @@
-'use strict';
+const h = require('react-hyperscript');
+const React = require('react');
+const Router = require('react-router');
 
-var h = require('react-hyperscript');
-var React = require('react');
-var Router = require('react-router');
+const Footer = require('../footer');
+const NavigationBar = require('../navigation');
 
-var Footer = require('../footer');
-var NavigationBar = require('../navigation');
 
-var App = React.createClass({
-
-  componentDidMount: function componentDidMount() {
-
-  },
-
-  componentWillUnmount: function componentWillUnmount() {
-
-  },
-
+const App = React.createClass({
   render: function render() {
     return (
       h('div', [
         h(NavigationBar),
         h(Router.RouteHandler),
-        h(Footer)
+        h(Footer),
       ])
     );
-  }
-
+  },
 });
+
 
 module.exports = App;

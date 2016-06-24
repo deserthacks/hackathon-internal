@@ -1,26 +1,26 @@
-'use strict';
+const Dispatcher = require('flux').Dispatcher;
+const Constants = require('../constants/application.constants');
+const assign = require('object-assign');
 
-var Dispatcher = require('flux').Dispatcher;
-var Constants = require('../constants/application.constants');
-var assign = require('object-assign');
+const AppDispatcher = assign(new Dispatcher(), {
 
-var AppDispatcher = assign(new Dispatcher(), {
-
-  handleServerAction: function(action) {
-    var payload = {
+  handleServerAction: (action) => {
+    const payload = {
       source: Constants.ActionSources.SERVER_ACTION,
-      action: action
+      action,
     };
+
     this.dispatch(payload);
   },
 
-  handleViewAction: function(action) {
-    var payload = {
+  handleViewAction: (action) => {
+    const payload = {
       source: Constants.ActionSources.VIEW_ACTION,
-      action: action
+      action,
     };
+
     this.dispatch(payload);
-  }
+  },
 
 });
 

@@ -1,15 +1,13 @@
-'use strict';
+const FixedDataTable = require('fixed-data-table');
+const h = require('react-hyperscript');
+const moment = require('moment');
+const React = require('react');
+const Router = require('react-router');
 
-var FixedDataTable = require('fixed-data-table');
-var h = require('react-hyperscript');
-var moment = require('moment');
-var React = require('react');
-var Router = require('react-router');
-
-var ROW_HEIGHT = 50;
+const ROW_HEIGHT = 50;
 
 function renderAcceptedColumn(cellData, cellKey, rowData) {
-  var classname = 'fdt-table__cell ';
+  let classname = 'fdt-table__cell ';
 
   if (rowData.status === 'reviewed') {
     if (cellData) {
@@ -21,42 +19,49 @@ function renderAcceptedColumn(cellData, cellKey, rowData) {
     classname += 'bg-warning';
   }
 
-  return h('div', {className: classname}, [
-    h('span', cellData ? 'Accepted' : 'Rejected')
+  return h('div', { className: classname }, [
+    h('span', cellData ? 'Accepted' : 'Rejected'),
   ]);
 }
 
 function renderCreatedAtColumn(cellData) {
-  return h('div', {className: 'fdt-table__cell'}, [
-    h('span', moment(cellData).format('lll'))
+  return h('div', { className: 'fdt-table__cell' }, [
+    h('span', moment(cellData).format('lll')),
   ]);
 }
 
 function renderHackathonColumn(cellData) {
-  return h('div', {className: 'fdt-table__cell'}, [
-    h('span', cellData.season)
+  return h('div', { className: 'fdt-table__cell' }, [
+    h('span', cellData.season),
   ]);
 }
 
 function renderReviewerColumn(cellData) {
   if (cellData) {
-    return h('div', {className: 'fdt-table__cell'}, [
-      h(Router.Link, {to: 'dashboard', params: {id: cellData._id}}, cellData.firstName + ' ' + cellData.lastName)
-    ]);
-  } else {
-    return h('div', {className: 'fdt-table__cell'}, [
-      h('em', 'Not reviewed yet')
+    return h('div', { className: 'fdt-table__cell' }, [
+      h(Router.Link, {
+        to: 'dashboard',
+        params: { id: cellData._id },
+      }, `${cellData.firstName} ${cellData.lastName}`),
     ]);
   }
-}
 
-function renderUserColumn(cellData) {
-  return h('div', {className: 'fdt-table__cell'}, [
-    h(Router.Link, {to: 'dashboard', params: {id: cellData._id}}, cellData.firstName + ' ' + cellData.lastName)
+  return h('div', { className: 'fdt-table__cell' }, [
+    h('em', 'Not reviewed yet'),
   ]);
 }
 
-var ApplicationTable = React.createClass({
+function renderUserColumn(cellData) {
+  return h('div', { className: 'fdt-table__cell' }, [
+    h(Router.Link, {
+      to: 'dashboard',
+      params: { id: cellData._id },
+    }, `${cellData.firstName} ${cellData.lastName}`),
+  ]);
+}
+
+
+const ApplicationTable = React.createClass({
 
   displayName: 'ApplicationTable',
 
@@ -66,7 +71,7 @@ var ApplicationTable = React.createClass({
     applications: React.PropTypes.array,
     onClick: React.PropTypes.func,
     initialLength: React.PropTypes.number,
-    filter: React.PropTypes.string
+    filter: React.PropTypes.string,
   },
 
   getInitialState: function getInitialState() {
@@ -74,78 +79,78 @@ var ApplicationTable = React.createClass({
       applicationStats: {},
       applications: [],
       left: 0,
-      top: 0
+      top: 0,
     };
   },
 
   componentDidMount: function componentDidMount() {
-    this._update();
+    this.update();
 
     if (window.addEventListener) {
-      window.addEventListener('resize', this._onResize, false);
+      window.addEventListener('resize', this.onResize, false);
     } else if (window.attachEvent) {
-      window.attatchEvent('onresize', this._onResize);
+      window.attatchEvent('onresize', this.onResize);
     }
   },
 
-  componentWillUnmount: function componentWillUnmount() {
-
-  },
-
   componentWillReceiveProps: function componentWillReceiveProps() {
-    this._update();
+    this.update();
   },
 
-  _getRow: function _getRow(index) {
-    var application = this.props.applications[index];
+  onRowClick: function onRowClick(event, index, data) {
+    this.props.onClick(data);
+  },
+
+  onResize: function onResize() {
+    clearTimeout(this.updateTimer);
+    this.updateTimer = setTimeout(this.update, 16);
+  },
+
+  getRow: function getRow(index) {
+    const application = this.props.applications[index];
 
     return application;
   },
 
-  _getRowCount: function _getRowCount() {
+  getRowCount: function getRowCount() {
     return this.props.applications.length;
   },
 
   // TODO: implement
-  _getRowClass: function _getRowClass(index) {
-    var application = this._getRow(index);
-    var classname = 'hi-table__row';
+  getRowClass: function getRowClass(index) {
+    const application = this.getRow(index);
+    let classname = 'hi-table__row';
 
     if (application) {
-      var status = '';
+      const status = '';
+
       if (application.accepted) {
-        //status = ' bg-success';
+        // status = ' bg-success';
       } else {
-        //status = ' bg-danger';
+        // status = ' bg-danger';
       }
       if (application.status === 'received') {
-        //status = ' bg-warning';
+        // status = ' bg-warning';
       }
-      classname += status;
+
+      classname = `${classname}${status}`;
     }
+
     return classname;
   },
 
-  _update: function _update() {
+  update: function update() {
     if (this.isMounted()) {
-      var node = React.findDOMNode(this);
-      var listHeight = (window.innerHeight < (this.props.initialLength * ROW_HEIGHT)) ? (window.innerHeight - 150) : this.props.initialLength * ROW_HEIGHT;
+      const node = React.findDOMNode(this);
+      const listHeight = (window.innerHeight < (this.props.initialLength * ROW_HEIGHT)) ?
+        (window.innerHeight - 150) : this.props.initialLength * ROW_HEIGHT;
 
       this.setState({
         renderComp: true,
         tableWidth: node.clientWidth,
-        tableHeight: listHeight
+        tableHeight: listHeight,
       });
     }
-  },
-
-  _onRowClick: function _onRowClick(event, index, data) {
-    this.props.onClick(data);
-  },
-
-  _onResize: function _onResize() {
-    clearTimeout(this._updateTimer);
-    this._updateTimer = setTimeout(this._update, 16);
   },
 
   render: function render() {
@@ -156,80 +161,81 @@ var ApplicationTable = React.createClass({
             rowHeight: ROW_HEIGHT,
             headerHeight: 45,
             groupHeaderHeight: 45,
-            rowGetter: this._getRow,
-            rowsCount: this._getRowCount(),
+            rowGetter: this.getRow,
+            rowsCount: this.getRowCount(),
             width: this.state.tableWidth,
             height: this.state.tableHeight,
-            onRowClick: this._onRowClick,
-            rowClassNameGetter: this._getRowClass,
+            onRowClick: this.onRowClick,
+            rowClassNameGetter: this.getRowClass,
             scrollTop: this.state.top,
             scrollLeft: this.state.left,
             overflowX: 'auto', // TODO: make this more advanced?
-            overflowY: 'auto'
+            overflowY: 'auto',
           }, [
             h(FixedDataTable.Column, {
               label: 'Hackathon',
               width: 100,
               dataKey: 'hackathon',
-              cellRenderer: renderHackathonColumn
+              cellRenderer: renderHackathonColumn,
             }),
             h(FixedDataTable.Column, {
               label: 'User',
               width: 200,
               dataKey: 'user',
-              cellRenderer: renderUserColumn
+              cellRenderer: renderUserColumn,
             }),
             h(FixedDataTable.Column, {
               label: 'Status',
               width: 100,
-              dataKey: 'status'
+              dataKey: 'status',
             }),
             h(FixedDataTable.Column, {
               label: 'Decision',
               width: 100,
               dataKey: 'accepted',
-              cellRenderer: renderAcceptedColumn
+              cellRenderer: renderAcceptedColumn,
             }),
             h(FixedDataTable.Column, {
               label: 'Role',
               width: 100,
-              dataKey: 'role'
+              dataKey: 'role',
             }),
             h(FixedDataTable.Column, {
               label: 'Created At',
               width: 100,
               dataKey: 'createdAt',
-              cellRenderer: renderCreatedAtColumn
+              cellRenderer: renderCreatedAtColumn,
             }),
             h(FixedDataTable.Column, {
               label: 'Reviewer',
               width: 200,
               dataKey: 'reviewedBy',
-              cellRenderer: renderReviewerColumn
+              cellRenderer: renderReviewerColumn,
             }),
             h(FixedDataTable.Column, {
               label: 'Reviewer note',
               width: 200,
               dataKey: 'reviewNote',
-              flexGrow: 2
+              flexGrow: 2,
             }),
             h(FixedDataTable.Column, {
               label: 'ID',
               width: 205,
-              dataKey: '_id'
-            })
-          ])
-        ])
-      );
-    } else {
-      return (
-        h('div', {}, [
-
+              dataKey: '_id',
+            }),
+          ]),
         ])
       );
     }
-  }
+
+    return (
+      h('div', {}, [
+
+      ])
+    );
+  },
 
 });
+
 
 module.exports = ApplicationTable;

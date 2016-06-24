@@ -1,102 +1,96 @@
-'use strict';
+const assign = require('object-assign');
+const EventEmitter = require('events').EventEmitter;
+const Immutable = require('immutable');
 
-var assign = require('object-assign');
-var EventEmitter = require('events').EventEmitter;
-var Immutable = require('immutable');
+const AppDispatcher = require('../dispatchers/app.dispatcher');
+const ApplicationAPI = require('../apis/application.api');
+const ApplicationConstants = require('../constants/application.constants');
+const SessionConstants = require('../constants/session.constants');
 
-var AppDispatcher = require('../dispatchers/app.dispatcher');
-var ApplicationAPI = require('../apis/application.api');
-var ApplicationConstants = require('../constants/application.constants');
-var SessionConstants = require('../constants/session.constants');
-
-var _applications = Immutable.List();
+let applications = new Immutable.List();
 
 function clearApplications() {
-  _applications = _applications.clear();
+  applications = applications.clear();
 }
 
-function storeApplication(application) {
-  application = application || {};
+function storeApplication(application = {}) {
+  const immutableApplication = Immutable.fromJS(application);
+  let key;
 
-  var immutableApplication = Immutable.fromJS(application);
-  var key;
-  var alreadyStored = _applications.find(function find(item, index) {
+  const alreadyStored = applications.find((item, index) => {
     key = index;
     return item.get('_id') === application._id;
   });
 
   if (alreadyStored) {
-    _applications = _applications.update(key, function updater(currentApplication) {
-      currentApplication = immutableApplication;
-      return currentApplication;
-    });
+    applications = applications.update(key, (currentApplication) => (
+      immutableApplication
+    ));
   } else {
-    _applications = _applications.push(immutableApplication);
+    applications = applications.push(immutableApplication);
   }
 }
 
-function storeApplications(applications) {
-  _applications = _applications.clear();
-  for (var i = 0; i < applications.length; i++) {
-    var application = Immutable.fromJS(applications[i]);
-    _applications = _applications.push(application);
+function storeApplications(apps) {
+  applications = applications.clear();
+
+  for (let i = 0; i < apps.length; i++) {
+    const app = Immutable.fromJS(apps[i]);
+    applications = apps.push(app);
   }
 }
 
-var ApplicationStore = assign(EventEmitter.prototype, {
+const ApplicationStore = assign(EventEmitter.prototype, {
 
   get: function get(index) {
-    return _applications[index];
+    return applications[index];
   },
 
   getApplication: function getApplication(id) {
-    var application = _applications.find(function find(item) {
-      return item.get('_id') === id;
-    });
+    const application = applications.find((item) => (
+      item.get('_id') === id
+    ));
 
     if (application) {
       return application.toJS();
-    } else {
-      ApplicationAPI.getApplication({id: id}, function(err, res) {
-        return res;
-      });
     }
+
+    return ApplicationAPI.getApplication({ id }, (err, res) => (
+      res
+    ));
   },
 
   getApplications: function getApplications() {
-    var applications = _applications.toJS();
-
-    return applications;
+    return applications.toJS();
   },
 
   getStats: function getStats() {
     return {};
   },
 
-  addChangeListener: function(callback) {
+  addChangeListener: (callback) => {
     this.on(ApplicationConstants.CHANGE_EVENT, callback);
   },
 
-  removeChangeListener: function(callback) {
+  removeChangeListener: (callback) => {
     this.removeListener(ApplicationConstants.CHANGE_EVENT, callback);
   },
 
-  emitChange: function() {
+  emitChange: () => {
     this.emit(ApplicationConstants.CHANGE_EVENT);
   },
 
-  dispatcherIndex: AppDispatcher.register(function(payload) {
-    var action = payload.action;
+  dispatcherIndex: AppDispatcher.register((payload) => {
+    const action = payload.action;
 
-    switch(action) {
-
+    switch (action) {
       case SessionConstants.ActionTypes.UPDATE_CURRENT_HACKATHON:
       case SessionConstants.ActionTypes.CLEAR_CURRENT_HACKATHON:
         clearApplications();
         ApplicationStore.emitChange();
         // falls through
       case ApplicationConstants.ActionTypes.GET_APPLICATIONS:
-        ApplicationAPI.getApplications(action.options, function() {
+        ApplicationAPI.getApplications(action.options, () => {
 
         });
         break;
@@ -112,21 +106,24 @@ var ApplicationStore = assign(EventEmitter.prototype, {
         break;
 
       case ApplicationConstants.ActionTypes.ACCEPT_APPLICATION:
-        ApplicationAPI.acceptApplication(payload.data, function(err, res) {
+        ApplicationAPI.acceptApplication(payload.data, (err, res) => {
           storeApplication(res);
           ApplicationStore.emitChange();
         });
         break;
 
       case ApplicationConstants.ActionTypes.REJECT_APPLICATION:
-        ApplicationAPI.rejectApplication(payload.data, function(err, res) {
+        ApplicationAPI.rejectApplication(payload.data, (err, res) => {
           storeApplication(res);
           ApplicationStore.emitChange();
         });
         break;
 
+      default:
+        // do nothing
+        break;
     }
-  })
+  }),
 
 });
 

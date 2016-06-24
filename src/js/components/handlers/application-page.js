@@ -1,153 +1,147 @@
-'use strict';
+const h = require('react-hyperscript');
+const React = require('react');
+const Router = require('react-router');
 
-var h = require('react-hyperscript');
-var React = require('react');
-var Router = require('react-router');
+const ApplicationAPI = require('../../apis/application.api');
+const ApplicationStore = require('../../stores/application.store');
+const ApplicationReviewModule = require('../application-review.module');
 
-var ApplicationAPI = require('../../apis/application.api');
-var ApplicationStore = require('../../stores/application.store');
-var ApplicationReviewModule = require('../application-review.module');
-
-var ApplicationPage = React.createClass({
+const ApplicationPage = React.createClass({
 
   getInitialState: function getInitialState() {
     return {};
   },
 
-  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-    this._onChange(nextProps.params);
-    this.getAdjacentApplications(nextProps.params);
+  componentWillMount: function componentDidMount() {
+    ApplicationStore.addChangeListener(this.onChange);
   },
 
   componentDidMount: function componentDidMount() {
-    this._onChange();
+    this.onChange();
     this.getAdjacentApplications();
   },
 
-  componentWillMount: function componentDidMount() {
-    ApplicationStore.addChangeListener(this._onChange);
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+    this.onChange(nextProps.params);
+    this.getAdjacentApplications(nextProps.params);
   },
 
   componentWillUnmount: function componentWillUnmount() {
-    ApplicationStore.removeChangeListener(this._onChange);
+    ApplicationStore.removeChangeListener(this.onChange);
   },
 
-  getAdjacentApplications: function getAdjacentApplications(params) {
-    var self = this;
-    params = params || self.props.params;
+  onChange: function onChange(params = {}) {
+    const application = ApplicationStore.getApplication(params.id);
 
-    ApplicationAPI.getAdjacentApplications(params, function(err, res) {
+    this.setState({
+      application,
+    });
+  },
+
+  getAdjacentApplications: function getAdjacentApplications(params = {}) {
+    ApplicationAPI.getAdjacentApplications(params, (err, res) => {
       if (!err && res) {
-        self.setState({
+        this.setState({
           nextApplication: res.next,
-          prevApplication: res.previous
+          prevApplication: res.previous,
         });
       }
     });
   },
 
-  _onChange: function _onChange(params) {
-    params = params || this.props.params;
-    var application = ApplicationStore.getApplication(params.id);
-
-    this.setState({
-      application: application
-    });
-  },
-
   render: function render() {
-    var application = this.state.application;
-    var responses = 0;
+    const application = this.state.application;
+    let responses = 0;
 
     if (application) {
-      var Response = application.response.map(function(response) {
-        return h('p', {key: responses++}, response);
-      });
-      var prevApplication = this.state.prevApplication;
-      var nextApplication = this.state.nextApplication;
+      const Response = application.response.map((response) => (
+        h('p', { key: responses++ }, response)
+      ));
+      const prevApplication = this.state.prevApplication;
+      const nextApplication = this.state.nextApplication;
 
-      var applicationPageNav = function applicationPageNav() {
-        var prevLink;
-        var nextLink;
+      const applicationPageNav = function applicationPageNav() {
+        let prevLink;
+        let nextLink;
 
         if (prevApplication) {
-          prevLink = h('div', {className: 'pull-left'}, [
-            h('span', {className: 'glyphicon glyphicon-chevron-left'}),
+          prevLink = h('div', { className: 'pull-left' }, [
+            h('span', { className: 'glyphicon glyphicon-chevron-left' }),
             h(Router.Link, {
               to: 'applicationPage',
-              params: {id: prevApplication._id},
-              activeClassName: 'disabled text-muted'
-            }, 'Previous')
+              params: { id: prevApplication._id },
+              activeClassName: 'disabled text-muted',
+            }, 'Previous'),
           ]);
         }
         if (nextApplication) {
-          nextLink = h('div', {className: 'pull-right'}, [
+          nextLink = h('div', { className: 'pull-right' }, [
             h(Router.Link, {
               to: 'applicationPage',
-              params: {id: nextApplication._id},
-              activeClassName: 'disabled text-muted'
+              params: { id: nextApplication._id },
+              activeClassName: 'disabled text-muted',
             }, 'Next'),
-            h('span', {className: 'glyphicon glyphicon-chevron-right'})
+            h('span', { className: 'glyphicon glyphicon-chevron-right' }),
           ]);
         }
 
-        return h('nav', {className: 'page__nav'}, [
+        return h('nav', { className: 'page__nav' }, [
           prevLink,
-          nextLink
+          nextLink,
         ]);
       };
 
       return (
-        h('div', {className: 'container'}, [
-          h('div', {className: 'row'}, [
-            h('div', {className: 'col-md-12'}, [
-              applicationPageNav()
-            ])
-          ]),
-          h('div', {className: 'row'}, [
-            h('div', {className: 'col-md-12'}, [
-              h('header', {className: 'page__header'}, [
-                h('h2', 'Review application')
-              ])
-            ])
-          ]),
-          h('div', {className: 'row'}, [
-            h('div', {className: 'col-md-3'}, [
-              h('div', {className: 'page__sidebar'}, [
-                h(ApplicationReviewModule, {
-                  application: application
-                })
-              ])
+        h('div', { className: 'container' }, [
+          h('div', { className: 'row' }, [
+            h('div', { className: 'col-md-12' }, [
+              applicationPageNav(),
             ]),
-            h('div', {className: 'col-md-9'}, [
-              h('div', {className: 'page__content'}, [
+          ]),
+          h('div', { className: 'row' }, [
+            h('div', { className: 'col-md-12' }, [
+              h('header', { className: 'page__header' }, [
+                h('h2', 'Review application'),
+              ]),
+            ]),
+          ]),
+          h('div', { className: 'row' }, [
+            h('div', { className: 'col-md-3' }, [
+              h('div', { className: 'page__sidebar' }, [
+                h(ApplicationReviewModule, {
+                  application,
+                }),
+              ]),
+            ]),
+            h('div', { className: 'col-md-9' }, [
+              h('div', { className: 'page__content' }, [
                 h('h5', 'Response'),
-                Response
-              ])
-            ])
-          ])
+                Response,
+              ]),
+            ]),
+          ]),
         ])
       );
     }
 
     return (
-      h('div', {className: 'container'}, [
-        h('div', {className: 'row'}, [
-          h('div', {className: 'col-md-12'}, [
-            h('div', {className: 'page__header'}, [
-              h('h4', 'Application status...')
+      h('div', { className: 'container' }, [
+        h('div', { className: 'row' }, [
+          h('div', { className: 'col-md-12' }, [
+            h('div', { className: 'page__header' }, [
+              h('h4', 'Application status...'),
             ]),
-            h('div', {className: 'page__content'}, [
+            h('div', { className: 'page__content' }, [
               h('h5', 'Response'),
-              h('p', 'Application response...')
+              h('p', 'Application response...'),
             ]),
-            h('h3', 'application page')
-          ])
-        ])
+            h('h3', 'application page'),
+          ]),
+        ]),
       ])
     );
 
-  }
+  },
 
 });
 
